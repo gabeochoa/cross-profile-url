@@ -15,5 +15,6 @@ document.addEventListener("click", function(event) {
     if (event.metaKey && target.tagName === "A") { // Cmd key pressed and link clicked
         console.log("sending open link message");
         chrome.runtime.sendMessage({ action: "openLink", url: target.href });
+        event.preventDefault();
     }
 });

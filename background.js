@@ -9,19 +9,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     (response) => {
         console.log("got response: ", response)
         if(!response.success){
-            console.err("Got bad response: ", response)
+            console.error("Got bad response: ", response)
             return;
         }
 
-        chrome.tabs.query({ active: false, lastFocusedWindow: true }, function(tabs) {
-          if (tabs.length > 0) {
-                console.log("tabs: ", tabs)
-                // setTimeout(function() {
-                    // chrome.tabs.remove(tabs[tabs.length - 1].id);
-                // }, 100);
-          }
-        });
-        
+        // chrome.tabs.query({ active: false, lastFocusedWindow: true }, function(tabs) {
+          // if (tabs.length > 0) {
+            // console.log("tabs: ", tabs)
+            // const newestInactiveTab = tabs.reduce((newest, current) => {
+              // return current.lastAccessed > newest.lastAccessed ? current : newest;
+            // }, tabs[0]);
+            // console.log("Newest inactive tab: ", newestInactiveTab);
+            // // You can now use newestInactiveTab.id to remove the tab, for example:
+            // // chrome.tabs.remove(newestInactiveTab.id);
+          // }
+        // });
     }
     );
 

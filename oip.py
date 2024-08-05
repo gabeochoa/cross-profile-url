@@ -4,6 +4,7 @@ import struct
 import sys
 import webbrowser
 import os
+import subprocess
 
 def read_message():
     # Read the message length (32-bit integer) from stdin
@@ -48,12 +49,21 @@ def main():
     # Open the URL in the default browser
     #  webbrowser.open(url)
 
-    chrome_app = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    chrome_app = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
     # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md#Mac-OS-X
     profile = "Default"
     cmd = (f"{chrome_app} --profile-directory=\"{profile}\" {url}")
-    send_message({'success': True, 'cmd': cmd})
-    os.system(cmd)
+
+    try:
+        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+        send_message({'success': True, 'cmd': cmd})
+        print(f"Success ran command {cmd}")
+    except subprocess.CalledProcessError as e:
+        error_message = e.output.decode('utf-8')
+        send_message({'success': False, 'msg': error_message})
+        print(f"Error: {error_message}")
+
+    print(f"Success ran command {cmd}")
 
 if __name__ == '__main__':
     main()
