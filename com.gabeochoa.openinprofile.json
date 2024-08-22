@@ -1,0 +1,7 @@
+{
+  "name": "com.gabeochoa.openinprofile",
+  "description": "Open In Profile Native",
+  "path": "/Users/gabeochoa/p/open-in-profile/oip.py",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://cjondcaikekpekfbpjpchjfbfnimhlhi/"]
+}
