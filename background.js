@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     },
     (response) => {
         console.log("got response: ", response)
-        if(!response.success){
+        if(!response || !response.success){
             console.error("Got bad response: ", response)
             return;
         }
