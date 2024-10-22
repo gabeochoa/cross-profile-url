@@ -50,7 +50,7 @@ def main():
     profile = "Default"
 
     chrome_app = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
-    cmd = (f"{chrome_app} --profile-directory=\"{profile}\" {url}")
+    cmd = (f"{chrome_app} --profile-directory=\"{profile}\" \"{url}\" ")
 
     try:
         output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
