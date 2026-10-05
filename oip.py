@@ -51,11 +51,14 @@ def build_argv(url, profile=PROFILE):
 def open_url(url):
     subprocess.run(build_argv(url), check=True, capture_output=True, text=True)
 def main():
-    data = read_message()
+    # stdout IS the native-messaging wire (length-prefixed): never print() there; diagnostics to stderr, always one framed response.
     try:
-        open_url(data["url"]); send_message({"success": True})
+        data = read_message(); open_url(data["url"])
     except subprocess.CalledProcessError as e:
-        send_message({"success": False, "msg": e.stderr or "chrome failed"})
+        print("chrome failed", file=sys.stderr); return send_message({"success": False, "msg": e.stderr or "chrome failed"})
+    except Exception as e:
+        print(f"bad request: {e}", file=sys.stderr); return send_message({"success": False, "msg": str(e)})
+    return send_message({"success": True})
 
 if __name__ == '__main__':
     main()
