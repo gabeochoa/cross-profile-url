@@ -5,6 +5,8 @@ import sys
 import webbrowser
 import os
 import subprocess
+import re
+from urllib.parse import urlparse
 
 def read_message():
     # Read the message length (32-bit integer) from stdin
@@ -39,29 +41,21 @@ def send_message(data):
     sys.stdout.buffer.flush()
 
 
+PROFILE = "Default"
+CHROME_APP = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+def build_argv(url, profile=PROFILE):
+    if not re.fullmatch(r"[A-Za-z0-9 _.-]+", profile): raise ValueError("bad profile")
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https") or not parsed.netloc: raise ValueError("only http(s) URLs")
+    return [CHROME_APP, f"--profile-directory={profile}", url]  # argv, never shell: url is data (305f291 quoting bypassable via embedded quote)
+def open_url(url):
+    subprocess.run(build_argv(url), check=True, capture_output=True, text=True)
 def main():
-    # Read a message from stdin
     data = read_message()
-
-    # Get the URL from the message
-    url = data['url']
-
-    # https://chromium.googlesource.com/chromium/src/+/HEAD/docs/user_data_dir.md#Mac-OS-X
-    profile = "Default"
-
-    chrome_app = "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
-    cmd = (f"{chrome_app} --profile-directory=\"{profile}\" \"{url}\" ")
-
     try:
-        output = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
-        send_message({'success': True, 'cmd': cmd})
-        print(f"Success ran command {cmd}")
+        open_url(data["url"]); send_message({"success": True})
     except subprocess.CalledProcessError as e:
-        error_message = e.output.decode('utf-8')
-        send_message({'success': False, 'msg': error_message})
-        print(f"Error: {error_message}")
-
-    print(f"Success ran command {cmd}")
+        send_message({"success": False, "msg": e.stderr or "chrome failed"})
 
 if __name__ == '__main__':
     main()
